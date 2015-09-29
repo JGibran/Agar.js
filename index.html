@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Bootstrap 3, from LayoutIt!</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+	
+	<style>
+    .agar {
+        width: 50px;
+        height: 50px;
+        border: 4px solid blue;
+        border-radius: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+
+    }
+        .agar div {
+            float: initial;
+            margin-top: 40%;
+            text-align: center;
+        }
+		
+	.food{
+		width: 10px;
+        height: 10px;
+        border: 4px solid black;
+        border-radius: 100%;
+        position: absolute;
+        left: 200px;
+        top: 200px;
+	}
+</style>
+	
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div id="agar_player1" class="agar"><div><label class="labe-info">1</label></div></div>
+			<div id="agar_player2" class="agar" style="top:100px;"><div><label class="labe-info">2</label></div></div>
+			<div id="foodContainer">
+			<div class="food"></div>
+			</div>
+		</div>
+	</div> 
+</div>
+	
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+	<script>
+		
+		
+		var lastPosition = {'x' : 0, 'y': 0};
+		var MainEvent;
+		
+		var player1 = {};
+		player1.Element = $('#agar_player1');
+		player1.getX = function(){
+			return parseInt($('#agar_player1').css('left').replace("px", ""));
+		};
+		
+		player1.getY = function(){
+			return parseInt($('#agar_player1').css('top').replace("px", ""));
+		};
+		
+		player1.setX = function(x){
+			player1.Element.css('left', x);
+		};
+		player1.setY = function(y){
+			player1.Element.css('top', y);
+		};
+		
+		player1.getSize = function(){
+			return parseInt(player1.Element.css('width').replace('px', ''));
+		};
+		player1.setSize = function(size){
+			player1.Element.animate({
+				width: size,
+				height: size
+			});
+		}
+		
+		
+		
+		var player2 = {};
+		player2.Element = $('#agar_player2');
+		player2.getX = function(){
+			return parseInt($('#agar_player2').css('left').replace("px", ""));
+		};
+		
+		player2.getY = function(){
+			return parseInt($('#agar_player2').css('top').replace("px", ""));
+		};
+		
+		player2.setX = function(x){
+			player2.Element.css('left', x);
+		};
+		player2.setY = function(y){
+			player2.Element.css('top', y);
+		};
+		
+		player2.getSize = function(){
+			return parseInt(player2.Element.css('width').replace('px', ''));
+		};
+		player2.setSize = function(size){
+			player2.Element.animate({
+				width: size,
+				height: size
+			});
+		}
+		
+		$(document).keydown(function(e){
+			//alert(e.keyCode);
+			e.preventDefault();
+			switch(e.keyCode){
+			
+				case 37: 
+					var left = parseInt(player2.Element.css('left').replace('px', '')) - 10 ;
+					player2.Element.css({'left': left});
+				break;
+				
+				case 38:  
+					var top = parseInt(player2.Element.css('top').replace('px', '')) - 10 ;
+					player2.Element.css({'top': top}); 
+				break;
+				
+				case 39: 
+					var left = parseInt(player2.Element.css('left').replace('px', '')) + 10 ;
+					player2.Element.css({'left': left});
+				break;
+				
+				case 40: 
+					var top = parseInt(player2.Element.css('top').replace('px', '')) + 10 ;
+					player2.Element.css({'top': top}); 
+				
+				break;
+			}
+			
+			eat(player2.getX(), player2.getY(), player2);
+		});
+		
+		
+		
+		$(document).on('mousemove', function (e) {
+			MainEvent = e;
+		});
+		
+		
+		
+		function moveAgar(posX, posY) {
+		  if(parseInt(player1.Element.css('left').replace("px", ""))  <= posX){
+				var mov_x = player1.getX() + 1;
+			}else{
+				var mov_x = player1.getX() - 1;
+			}
+			if(parseInt(player1.Element.css('top').replace("px", ""))  <= posY){
+				var mov_y = player1.getY() + 1;
+			}else{
+				var mov_y = player1.getY() - 1;
+			}
+			
+			player1.setX(mov_x);
+			player1.setY(mov_y);
+			
+		}
+
+		
+		function eat(posX, posY, player){
+			$('.food').each(function(){
+				if(parseInt($(this).css('left')) + eatRange(player.getSize(), 0) > posX && parseInt($(this).css('left')) - eatRange(player.getSize(), 1) < posX) {
+					if(parseInt($(this).css('top')) + eatRange(player.getSize(), 0.1) > posY && parseInt($(this).css('top')) - eatRange(player.getSize(), 1) < posY) {
+						player.setSize(player.getSize() + 5);
+						$(this).remove();
+					}
+				}
+			});
+			
+		}
+		function eatRange(size, range){
+			if(range == 0){
+				return parseInt(size * range) - 20;
+			}
+			return parseInt(size * range) ;
+		}
+		
+		
+		player1.Element.click(function(){
+			var InfiniteRotator =
+			{
+				init: function () {
+					var itemInterval = 1;
+					
+					if(typeof MainEvent !== 'undefined'){
+						var infiniteLoop = setInterval(function () {
+						
+							moveAgar(MainEvent.pageX, MainEvent.pageY);
+							eat(player1.getX(), player1.getY(), player1);
+							
+							
+							
+						}, itemInterval);
+					}
+				}
+			};
+			InfiniteRotator.init();
+		});
+
+		
+		function food(){
+			var food = $('<div/>', {
+				'class' : 'food',
+			}).css('border-color',  '#' + Math.floor(Math.random()*16777215).toString(16));
+			food.css({
+				left: parseInt(Math.random() * 1200) + 10,
+				top:parseInt(Math.random() * 600)+ 10
+			});
+			return food;
+		}
+		
+		$(document).ready(function(){
+			for(var i = 0 ; i< 50; i++){
+				$('#foodContainer').append(food());
+			}
+			
+			var InfiniteRotator =
+			{
+				init: function () {
+					var itemInterval = 1000;
+						var infiniteLoop = setInterval(function () {
+							$('#foodContainer').append(food());
+						}, itemInterval);
+				}
+			};
+			InfiniteRotator.init();
+			
+			
+		});
+		
+		
+		
+		
+	</script>
+  </body>
+</html>
