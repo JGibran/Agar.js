@@ -86,7 +86,7 @@
 			return parseInt(player1.Element.css('width').replace('px', ''));
 		};
 		player1.setSize = function(size){
-			player1.Element.animate({
+			player1.Element.css({
 				width: size,
 				height: size
 			});
@@ -115,7 +115,7 @@
 			return parseInt(player2.Element.css('width').replace('px', ''));
 		};
 		player2.setSize = function(size){
-			player2.Element.animate({
+			player2.Element.css({
 				width: size,
 				height: size
 			});
@@ -149,6 +149,7 @@
 			}
 			
 			eat(player2.getX(), player2.getY(), player2);
+			eatAgar(player2.getX(), player2.getY(), player2);
 		});
 		
 		
@@ -181,12 +182,26 @@
 			$('.food').each(function(){
 				if(parseInt($(this).css('left')) + eatRange(player.getSize(), 0) > posX && parseInt($(this).css('left')) - eatRange(player.getSize(), 1) < posX) {
 					if(parseInt($(this).css('top')) + eatRange(player.getSize(), 0.1) > posY && parseInt($(this).css('top')) - eatRange(player.getSize(), 1) < posY) {
-						player.setSize(player.getSize() + 5);
+						player.setSize(player.getSize() + 1);
 						$(this).remove();
 					}
 				}
 			});
-			
+		}
+		function eatAgar(posX, posY, player){
+			$('.agar').each(function(index, Element){
+				if($(Element).attr('id') != player.Element.attr('id')){
+					
+					if(parseInt($(Element).css('left')) + eatRange(player.getSize(), 1) - 40  > posX && parseInt($(Element).css('left')) - eatRange(player.getSize(), 1) + 40  < posX) {
+						if(parseInt($(Element).css('top')) + eatRange(player.getSize(), 1) - 40 > posY && parseInt($(Element).css('top')) - eatRange(player.getSize(), 1) + 40 < posY) {
+							if(player.getSize() > parseInt($(Element).css('width').replace('px', '')) * 1.25){
+								player.setSize(player.getSize() + parseInt($(Element).css('width').replace('px', '')));
+								$(Element).remove();
+							}
+						}
+					}
+				}
+			});
 		}
 		function eatRange(size, range){
 			if(range == 0){
@@ -207,9 +222,7 @@
 						
 							moveAgar(MainEvent.pageX, MainEvent.pageY);
 							eat(player1.getX(), player1.getY(), player1);
-							
-							
-							
+							eatAgar(player1.getX(), player1.getY(), player1);
 						}, itemInterval);
 					}
 				}
@@ -228,9 +241,9 @@
 			});
 			return food;
 		}
-		
+
 		$(document).ready(function(){
-			for(var i = 0 ; i< 50; i++){
+			for(var i = 0 ; i< 100; i++){
 				$('#foodContainer').append(food());
 			}
 			
@@ -239,18 +252,16 @@
 				init: function () {
 					var itemInterval = 1000;
 						var infiniteLoop = setInterval(function () {
-							$('#foodContainer').append(food());
+							for(var i = 0; i< 3; i++){
+								$('#foodContainer').append(food());
+							}
 						}, itemInterval);
 				}
 			};
 			InfiniteRotator.init();
-			
-			
+
 		});
-		
-		
-		
-		
+	
 	</script>
   </body>
 </html>
